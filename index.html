@@ -89,6 +89,7 @@ footer { margin-top: 18px; font-size: .7rem; color: #3e2208; font-style: italic;
     </g>
     <circle cx="0" cy="0" r="538" fill="none" stroke="#5c3308" stroke-width="2"/>
     <circle cx="0" cy="0" r="543" fill="none" stroke="#2e1804" stroke-width="1"/>
+    <circle id="center-highlight" cx="0" cy="0" r="104" fill="rgba(212,168,67,0.12)" stroke="#d4a843" stroke-width="2" opacity="0" style="pointer-events:none;transition:opacity .15s"/>
   </svg>
   <div id="combo-display"></div>
 </div>
@@ -299,12 +300,14 @@ function spinWheel() {
 }
 
 const svg=document.getElementById('wheel-svg');
+const centerHL = document.getElementById('center-highlight');
 svg.addEventListener('mousemove', e => {
   if (isSpinning) return;
   const rect=svg.getBoundingClientRect();
   const svgX=(e.clientX-rect.left)*(1100/rect.width)-550;
   const svgY=(e.clientY-rect.top)*(1100/rect.height)-550;
   const dist=Math.sqrt(svgX*svgX+svgY*svgY);
+  centerHL.style.opacity = dist < RINGS[0][0] ? '1' : '0';
   if (dist<RINGS[0][0]||dist>RINGS[RINGS.length-1][1]) {
     document.getElementById('combo-display').innerHTML=''; return;
   }
@@ -312,7 +315,10 @@ svg.addEventListener('mousemove', e => {
   if (angle<0) angle+=360;
   showCombo(angle);
 });
-svg.addEventListener('mouseleave', ()=>{ document.getElementById('combo-display').innerHTML=''; });
+svg.addEventListener('mouseleave', ()=>{
+  document.getElementById('combo-display').innerHTML='';
+  centerHL.style.opacity='0';
+});
 
 /* ═══════════════════════════════════════════
    COMBO DISPLAY
