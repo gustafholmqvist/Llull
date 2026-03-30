@@ -30,13 +30,13 @@ body {
   margin-bottom: 14px;
 }
 h1 {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: 'UnifrakturMaguntia', cursive;
   font-size: clamp(1.3rem, 3.8vw, 2.4rem);
   color: #d4a843;
   text-shadow: 0 0 28px rgba(212,168,67,.4), 2px 2px 5px #000;
   letter-spacing: 3px;
 }
-.masthead .sub { color: #7a5a28; font-style: italic; font-size: .8rem; letter-spacing: 1.5px; margin-top: 4px; }
+.masthead .sub { color: #7a5a28; font-size: .8rem; letter-spacing: 1.5px; margin-top: 4px; }
 #set-indicator { color: #8a6530; font-size: .73rem; margin-top: 4px; letter-spacing: 1px; font-style: italic; min-height: 1em; }
 
 /* ─── wheel ─── */
@@ -211,7 +211,7 @@ function buildRing(ri, words) {
     const sg = el('g', { transform: `rotate(${mid})` });
     sg.appendChild(el('text', {
       x:0, y:String(-midR), 'text-anchor':'middle', 'dominant-baseline':'central',
-      'font-family':'Cinzel,serif', 'font-size':String(fs), fill:tc, 'letter-spacing':'0.2'
+      'font-family':'UnifrakturMaguntia,cursive', 'font-size':String(fs), fill:tc, 'letter-spacing':'0.2'
     }, words[i]));
     g.appendChild(sg);
   }
@@ -246,12 +246,12 @@ function buildCenter() {
     const p=pt(tR,i*45);
     g.appendChild(el('circle',{cx:p.x,cy:p.y,r:13,fill:'#180902',stroke:'#7a3010','stroke-width':'1'}));
     g.appendChild(el('text',{x:p.x,y:String(p.y+4.5),'text-anchor':'middle',
-      'font-family':'Cinzel,serif','font-size':'11','font-weight':'700',fill:'#d4a843'},ltr));
+      'font-family':'UnifrakturMaguntia,cursive','font-size':'11','font-weight':'700',fill:'#d4a843'},ltr));
   });
   g.appendChild(el('circle',{cx:0,cy:0,r:5,fill:'#d4a843'}));
   const defs=document.getElementById('defs'), pid='cpath';
   defs.appendChild(el('path',{id:pid,d:`M0,${-(R-7)} A${R-7},${R-7} 0 1 1 -0.001,${-(R-7)}`}));
-  const txt=el('text',{'font-family':'Cinzel,serif','font-size':'6.5',fill:'#6a3010','letter-spacing':'2.5'});
+  const txt=el('text',{'font-family':'UnifrakturMaguntia,cursive','font-size':'6.5',fill:'#6a3010','letter-spacing':'2.5'});
   const tpr=el('textPath',{href:`#${pid}`,'startOffset':'0%'});
   tpr.textContent='ARS MAGNA · RVMÓN LLVLL · MALLORCA · ✦ · MDCCC · ✦ · ';
   txt.appendChild(tpr); g.appendChild(txt);
