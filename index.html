@@ -9,48 +9,24 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background:
-    radial-gradient(ellipse at 18% 12%, rgba(90,45,5,.11) 0%, transparent 45%),
-    radial-gradient(ellipse at 82% 10%, rgba(70,35,3,.08) 0%, transparent 40%),
-    radial-gradient(ellipse at 10% 82%, rgba(80,40,4,.10) 0%, transparent 45%),
-    radial-gradient(ellipse at 88% 88%, rgba(60,30,2,.08) 0%, transparent 40%),
-    radial-gradient(ellipse at 50% 15%, #2d1504 0%, #0e0602 100%);
+  background: radial-gradient(ellipse at 50% 15%, #2d1504 0%, #0e0602 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-family: 'UnifrakturMaguntia', cursive;
   color: #e8d5a3;
-  padding: 8px 8px 32px;
+  padding: 0 12px 40px;
   user-select: none;
-}
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: radial-gradient(ellipse at center, transparent 52%, rgba(0,0,0,.38) 100%);
-  pointer-events: none; z-index: 0;
-}
-
-/* ─── parchment frame ─── */
-.parchment-wrap {
-  position: relative; z-index: 1;
-  max-width: 780px;
-  width: calc(100% - 16px);
-  margin: 12px auto 20px;
-  padding: 48px 24px 32px;
-  border: 2px solid #5a3010;
-  box-shadow:
-    inset 0 0 0 7px #0e0602,
-    inset 0 0 0 9px #4a2808;
-  overflow: visible;
 }
 
 /* ─── masthead ─── */
 .masthead {
   text-align: center;
-  padding: 8px 0 12px;
+  padding: 24px 0 12px;
   border-bottom: 1px solid #4a2a08;
   width: 100%;
+  max-width: 820px;
   margin-bottom: 14px;
 }
 h1 {
@@ -64,7 +40,7 @@ h1 {
 #set-indicator { color: #8a6530; font-size: .73rem; margin-top: 4px; letter-spacing: 1px; font-style: italic; min-height: 1em; }
 
 /* ─── wheel ─── */
-.wheel-wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; }
+.wheel-wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 820px; }
 #wheel-svg {
   width: 100%; max-width: 720px; height: auto;
   cursor: crosshair;
@@ -94,7 +70,6 @@ footer { margin-top: 18px; font-size: .7rem; color: #3e2208; font-style: italic;
 </head>
 <body>
 
-<div class="parchment-wrap">
 <div class="masthead">
   <h1>Ars Magna Mallorquensis</h1>
   <div class="sub">Combinatoria Mystica · Post Conferentiam · MMXXV</div>
@@ -120,7 +95,6 @@ footer { margin-top: 18px; font-size: .7rem; color: #3e2208; font-style: italic;
 </div>
 
 <footer>Inspirerat av Ramon Llull · Ars Generalis Ultima · c.&thinsp;1305 · Mallorca</footer>
-</div><!-- /parchment-wrap -->
 
 <script>
 /* ═══════════════════════════════════════════
@@ -445,38 +419,6 @@ function updateHighlight(angle) {
 }
 
 /* ═══════════════════════════════════════════
-   FRAME CORNER ORNAMENTS
-═══════════════════════════════════════════ */
-function makeFrameCorner(cssPos) {
-  const sz=70, s=28, c='#7a5030';
-  const svgEl=document.createElementNS(SVG_NS,'svg');
-  svgEl.setAttribute('width',sz); svgEl.setAttribute('height',sz);
-  svgEl.setAttribute('viewBox',`${-sz/2} ${-sz/2} ${sz} ${sz}`);
-  svgEl.style.cssText=`position:absolute;pointer-events:none;z-index:6;${cssPos}`;
-  for (let i=0;i<4;i++) {
-    const arm=el('g',{transform:`rotate(${i*90})`});
-    arm.appendChild(el('path',{
-      d:`M0,0 C-${s*.24},-${s*.1} -${s*.2},-${s*.62} 0,-${s*.88} C${s*.2},-${s*.62} ${s*.24},-${s*.1} 0,0`,
-      fill:c,opacity:'0.72'
-    }));
-    arm.appendChild(el('circle',{cx:0,cy:-s*.88,r:s*.1,fill:c,opacity:'0.82'}));
-    svgEl.appendChild(arm);
-  }
-  for (let i=0;i<4;i++) {
-    const arm=el('g',{transform:`rotate(${i*90+45})`});
-    arm.appendChild(el('path',{
-      d:`M0,-${s*.28} C${s*.28},-${s*.28} ${s*.48},-${s*.5} ${s*.36},-${s*.68} C${s*.24},-${s*.82} ${s*.06},-${s*.72} ${s*.1},-${s*.58}`,
-      fill:'none',stroke:c,'stroke-width':'1.6',opacity:'0.6','stroke-linecap':'round'
-    }));
-    arm.appendChild(el('circle',{cx:s*.1,cy:-s*.58,r:s*.08,fill:c,opacity:'0.6'}));
-    svgEl.appendChild(arm);
-  }
-  svgEl.appendChild(el('circle',{cx:0,cy:0,r:s*.28,fill:'none',stroke:c,'stroke-width':'1',opacity:'0.5'}));
-  svgEl.appendChild(el('circle',{cx:0,cy:0,r:s*.1,fill:c,opacity:'0.9'}));
-  return svgEl;
-}
-
-/* ═══════════════════════════════════════════
    BOOT
 ═══════════════════════════════════════════ */
 svg.addEventListener('click', e => {
@@ -495,12 +437,6 @@ svg.addEventListener('click', e => {
     spinWheel();
   }
 });
-// Add frame corner ornaments
-const wrap = document.querySelector('.parchment-wrap');
-const off = '-35px';
-[`top:${off};left:${off}`,`top:${off};right:${off}`,`bottom:${off};left:${off}`,`bottom:${off};right:${off}`]
-  .forEach(pos => wrap.appendChild(makeFrameCorner(pos)));
-
 init();
 </script>
 </body>
