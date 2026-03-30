@@ -104,12 +104,12 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const RINGS = [
   // [innerR, outerR, fillEven, fillOdd, textColor, fontSize]  index 0 = innermost
-  [105, 205, '#4e1820', '#601e28', '#f5c4b0', 7.5],
-  [205, 265, '#1b3f2e', '#225038', '#b0e8c4', 11.0],
-  [265, 335, '#47280e', '#5a3412', '#f0d0a0', 9.5],
-  [335, 400, '#1b2e58', '#223870', '#b8ccf5', 12.0],
-  [400, 468, '#504000', '#665200', '#f0e090', 12.5],
-  [468, 536, '#501828', '#642030', '#fad4b8', 13.5],
+  [140, 205, '#4e1820', '#601e28', '#f5c4b0', 9.5],
+  [205, 265, '#1b3f2e', '#225038', '#b0e8c4', 15.0],
+  [265, 335, '#47280e', '#5a3412', '#f0d0a0', 13.5],
+  [335, 400, '#1b2e58', '#223870', '#b8ccf5', 20.0],
+  [400, 468, '#504000', '#665200', '#f0e090', 20.5],
+  [468, 536, '#501828', '#642030', '#fad4b8', 21.5],
 ];
 
 const DEFAULT_GIST_ID = '0b7040ac0af3c69559c6511afe957ee9';
@@ -223,7 +223,7 @@ function buildRing(ri, words) {
 }
 
 function buildCenter() {
-  const R=105, g=el('g');
+  const R=140, g=el('g');
   g.appendChild(el('circle',{cx:0,cy:0,r:R,fill:'#090402'}));
   for (let r=R-7; r>18; r-=13)
     g.appendChild(el('circle',{cx:0,cy:0,r,fill:'none',stroke:'#3e1a08','stroke-width':'0.5',opacity:'0.6'}));
@@ -258,6 +258,33 @@ function buildCenter() {
   txt.appendChild(tpr); g.appendChild(txt);
   g.appendChild(el('circle',{cx:0,cy:0,r:R,fill:'none',stroke:'#7a3010','stroke-width':'1.6'}));
   g.appendChild(el('circle',{cx:0,cy:0,r:R+4,fill:'none',stroke:'#2e1204','stroke-width':'1'}));
+
+  // Alchemical symbols at NE, SE, SW, NW (outside the wheel)
+  const sc='#7a5228', sw='2.8', sr=575, ss=28;
+  [
+    { angle:45,  type:'fire'  },  // NE
+    { angle:135, type:'earth' },  // SE
+    { angle:225, type:'water' },  // SW
+    { angle:315, type:'air'   },  // NW
+  ].forEach(({angle, type}) => {
+    const p=pt(sr, angle), sg=el('g');
+    const up = type==='fire'||type==='air';
+    const ay = up ? -ss : ss, by = up ? ss*0.55 : -ss*0.55, bx = ss*0.85;
+    sg.appendChild(el('polygon',{
+      points:`${p.x},${p.y+ay} ${p.x-bx},${p.y+by} ${p.x+bx},${p.y+by}`,
+      fill:'none', stroke:sc, 'stroke-width':sw, 'stroke-linejoin':'round'
+    }));
+    if (type==='air'||type==='earth') {
+      const barY = up ? p.y+by*0.15 : p.y+by*0.15;
+      const barX = bx * (Math.abs(barY - (p.y+ay)) / (Math.abs(p.y+by - (p.y+ay))));
+      sg.appendChild(el('line',{
+        x1:p.x-barX, y1:barY, x2:p.x+barX, y2:barY,
+        stroke:sc, 'stroke-width':sw
+      }));
+    }
+    g.appendChild(sg);
+  });
+
   return g;
 }
 
