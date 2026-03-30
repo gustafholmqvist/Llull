@@ -81,6 +81,7 @@ footer { margin-top: 18px; font-size: .7rem; color: #3e2208; font-style: italic;
     <defs id="defs"></defs>
     <circle cx="0" cy="0" r="540" fill="#0c0501"/>
     <g id="rings-g"></g>
+    <g id="highlight-g"></g>
     <g id="center-g"></g>
     <g>
       <polygon points="0,-547 -11,-520 11,-520" fill="#d4a843"/>
@@ -104,11 +105,11 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const RINGS = [
   // [innerR, outerR, fillEven, fillOdd, textColor, fontSize]  index 0 = innermost
   [105, 205, '#4e1820', '#601e28', '#f5c4b0', 7.5],
-  [205, 265, '#1b3f2e', '#225038', '#b0e8c4', 9.0],
-  [265, 335, '#47280e', '#5a3412', '#f0d0a0', 7.5],
-  [335, 400, '#1b2e58', '#223870', '#b8ccf5', 8.0],
-  [400, 468, '#504000', '#665200', '#f0e090', 8.5],
-  [468, 536, '#501828', '#642030', '#fad4b8', 9.5],
+  [205, 265, '#1b3f2e', '#225038', '#b0e8c4', 11.0],
+  [265, 335, '#47280e', '#5a3412', '#f0d0a0', 9.5],
+  [335, 400, '#1b2e58', '#223870', '#b8ccf5', 12.0],
+  [400, 468, '#504000', '#665200', '#f0e090', 12.5],
+  [468, 536, '#501828', '#642030', '#fad4b8', 13.5],
 ];
 
 const DEFAULT_GIST_ID = '0b7040ac0af3c69559c6511afe957ee9';
@@ -293,7 +294,7 @@ function spinWheel() {
       if (ring) ring.setAttribute('transform',`rotate(${startRots[i]+(targetRots[i]-startRots[i])*e})`);
     }
     if (t<1) { requestAnimationFrame(frame); }
-    else { currentRotations=[...targetRots]; isSpinning=false; }
+    else { currentRotations=[...targetRots]; isSpinning=false; document.getElementById('highlight-g').innerHTML=''; }
   }
   requestAnimationFrame(frame);
 }
@@ -316,6 +317,7 @@ svg.addEventListener('mousemove', e => {
 });
 svg.addEventListener('mouseleave', ()=>{
   document.getElementById('combo-display').innerHTML='';
+  document.getElementById('highlight-g').innerHTML='';
   centerHL.style.opacity='0';
 });
 
@@ -329,13 +331,32 @@ function getWordAtAngle(angle, words, rotation) {
 }
 
 function showCombo(angle) {
-  const w = ringData.map((rw, ri) => getWordAtAngle(angle, rw, currentRotations[ri]));
+  const w = ringData.map((rw, ri) => getWordAtAngle(angle, rw, currentRotations[ri]) ?? '');
   // w[0]=plats, w[1]=prep, w[2]=adverb, w[3]=verb, w[4]=och+namn, w[5]=namn
   const line1 = w[5] + ' ' + w[4];
   const line2 = w[3] + ' ' + w[2];
   const line3 = w[1] + ' ' + w[0];
   const d = document.getElementById('combo-display');
   d.innerHTML = `<span>${line1}</span><span>${line2}</span><span>${line3}</span>`;
+  updateHighlight(angle);
+}
+
+function updateHighlight(angle) {
+  const hg = document.getElementById('highlight-g');
+  hg.innerHTML = '';
+  if (angle === null) return;
+  for (let ri = 0; ri < ringData.length; ri++) {
+    const [r1, r2] = RINGS[ri];
+    const n = ringData[ri].length, step = 360 / n;
+    const localAngle = ((angle - currentRotations[ri]) % 360 + 360) % 360;
+    const idx = Math.floor(localAngle / step) % n;
+    const g = el('g', { transform: `rotate(${currentRotations[ri]})` });
+    g.appendChild(el('path', {
+      d: sectorD(r1 + 0.5, r2 - 0.5, idx * step, (idx + 1) * step),
+      fill: 'rgba(0,0,0,0.45)', stroke: 'none'
+    }));
+    hg.appendChild(g);
+  }
 }
 
 /* ═══════════════════════════════════════════
