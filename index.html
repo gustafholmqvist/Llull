@@ -164,19 +164,20 @@ function applySet(allSets, name) {
 
 async function init() {
   currentSetName = setNameFromHash();
-  let allSets = {};
+  let allSets;
   try {
     allSets = await gistRead(S.gistId);
   } catch(e) {
-    console.warn('Gist-fel, faller tillbaka på words.json:', e.message);
-    try {
-      const arr = await fetch('words.json').then(r => r.json());
-      allSets = { default: arr };
-    } catch(e2) {
-      allSets = {};
-    }
+    document.getElementById('set-indicator').textContent = 'Kunde inte ladda data: ' + e.message;
+    document.getElementById('set-indicator').style.color = '#c04030';
+    return;
   }
-  applySet(allSets, currentSetName in allSets ? currentSetName : 'default');
+  if (!(currentSetName in allSets)) {
+    document.getElementById('set-indicator').textContent = `Uppsättningen "${currentSetName}" finns inte`;
+    document.getElementById('set-indicator').style.color = '#c04030';
+    return;
+  }
+  applySet(allSets, currentSetName);
   renderWheel();
   spinWheel();
 }
