@@ -49,29 +49,23 @@ h1 {
 
 /* ─── combo display ─── */
 #combo-display {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
   text-align: center;
   font-family: 'IM Fell English', serif;
   font-style: italic;
-  font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+  font-size: clamp(1.1rem, 3.5vw, 1.8rem);
   color: #e8d5a3;
-  line-height: 1.6;
-  min-height: 4.8em;
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 0 8px;
-  width: 100%; max-width: 720px;
+  line-height: 1.7;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  background: radial-gradient(ellipse at center, rgba(8,3,1,.92) 40%, transparent 75%);
+  width: 55%; max-width: 400px;
+  padding: 2em 1em;
+  z-index: 10;
 }
 
-/* ─── tooltip ─── */
-#tooltip {
-  position: fixed; pointer-events: none;
-  background: rgba(8,4,1,.94); border: 1px solid #8B4513;
-  color: #e8d5a3; font-family: 'IM Fell English', serif;
-  font-style: italic; font-size: clamp(.88rem,1.8vw,1.08rem);
-  padding: 8px 18px; max-width: 380px;
-  display: none; z-index: 200;
-  box-shadow: 0 4px 24px rgba(0,0,0,.7);
-  line-height: 1.45; text-align: center;
-}
 
 footer { margin-top: 18px; font-size: .7rem; color: #3e2208; font-style: italic; text-align: center; }
 </style>
@@ -100,7 +94,6 @@ footer { margin-top: 18px; font-size: .7rem; color: #3e2208; font-style: italic;
   <div id="combo-display"></div>
 </div>
 
-<div id="tooltip"></div>
 <footer>Inspirerat av Ramon Llull · Ars Generalis Ultima · c.&thinsp;1305 · Mallorca</footer>
 
 <script>
@@ -306,30 +299,21 @@ function spinWheel() {
   requestAnimationFrame(frame);
 }
 
-/* ═══════════════════════════════════════════
-   HOVER TOOLTIP
-═══════════════════════════════════════════ */
-const tooltip=document.getElementById('tooltip');
 const svg=document.getElementById('wheel-svg');
 svg.addEventListener('mousemove', e => {
-  if (isSpinning) { tooltip.style.display='none'; return; }
+  if (isSpinning) return;
   const rect=svg.getBoundingClientRect();
   const svgX=(e.clientX-rect.left)*(1100/rect.width)-550;
   const svgY=(e.clientY-rect.top)*(1100/rect.height)-550;
   const dist=Math.sqrt(svgX*svgX+svgY*svgY);
-  if (dist<RINGS[0][0]||dist>RINGS[RINGS.length-1][1]) { tooltip.style.display='none'; return; }
+  if (dist<RINGS[0][0]||dist>RINGS[RINGS.length-1][1]) {
+    document.getElementById('combo-display').innerHTML=''; return;
+  }
   let angle=Math.atan2(svgX,-svgY)*180/Math.PI;
   if (angle<0) angle+=360;
-  const words=ringData.map((rw,ri)=>getWordAtAngle(angle,rw,currentRotations[ri]));
-  tooltip.textContent=words[5]+' '+words[4]+' '+words[3]+' '+words[2]+' '+words[1]+' '+words[0];
-  tooltip.style.display='block';
-  let tx=e.clientX+14, ty=e.clientY-36;
-  const tw=tooltip.offsetWidth||280;
-  if (tx+tw>window.innerWidth-8) tx=e.clientX-tw-14;
-  if (ty<8) ty=e.clientY+14;
-  tooltip.style.left=tx+'px'; tooltip.style.top=ty+'px';
+  showCombo(angle);
 });
-svg.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; });
+svg.addEventListener('mouseleave', ()=>{ document.getElementById('combo-display').innerHTML=''; });
 
 /* ═══════════════════════════════════════════
    COMBO DISPLAY
