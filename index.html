@@ -153,8 +153,6 @@ function applySet(allSets, name) {
   currentSetName = name;
   ringData = allSets[name] || allSets['default'] || Object.values(allSets)[0];
   currentRotations = new Array(ringData.length).fill(0);
-  const ind = document.getElementById('set-indicator');
-  ind.textContent = currentSetName !== 'default' ? `Aktiv uppsättning: ${currentSetName}` : '';
 }
 
 async function init() {
@@ -283,6 +281,40 @@ function buildCenter() {
       }));
     }
     g.appendChild(sg);
+  });
+
+  // Illuminated manuscript corner ornaments (further out)
+  const oc='#7a5030', or2=645, os=36;
+  [45,135,225,315].forEach(angle => {
+    const p=pt(or2,angle);
+    const orn=el('g',{transform:`translate(${p.x},${p.y})`});
+    // Four filled petals (N/S/E/W)
+    for (let i=0;i<4;i++) {
+      const arm=el('g',{transform:`rotate(${i*90})`});
+      arm.appendChild(el('path',{
+        d:`M0,0 C-${os*.24},-${os*.1} -${os*.2},-${os*.62} 0,-${os*.88} C${os*.2},-${os*.62} ${os*.24},-${os*.1} 0,0`,
+        fill:oc, opacity:'0.72'
+      }));
+      // Tiny circle at petal tip
+      arm.appendChild(el('circle',{cx:0,cy:-os*.88,r:os*.1,fill:oc,opacity:'0.8'}));
+      orn.appendChild(arm);
+    }
+    // Four scrolling tendrils between petals
+    for (let i=0;i<4;i++) {
+      const arm=el('g',{transform:`rotate(${i*90+45})`});
+      // Curved tendril
+      arm.appendChild(el('path',{
+        d:`M0,-${os*.28} C${os*.28},-${os*.28} ${os*.48},-${os*.5} ${os*.36},-${os*.68} C${os*.24},-${os*.82} ${os*.06},-${os*.72} ${os*.1},-${os*.58}`,
+        fill:'none', stroke:oc, 'stroke-width':'1.6', opacity:'0.6', 'stroke-linecap':'round'
+      }));
+      // Small spiral terminal
+      arm.appendChild(el('circle',{cx:os*.1,cy:-os*.58,r:os*.08,fill:oc,opacity:'0.6'}));
+      orn.appendChild(arm);
+    }
+    // Outer ring + inner dot
+    orn.appendChild(el('circle',{cx:0,cy:0,r:os*.28,fill:'none',stroke:oc,'stroke-width':'1',opacity:'0.5'}));
+    orn.appendChild(el('circle',{cx:0,cy:0,r:os*.1,fill:oc,opacity:'0.9'}));
+    g.appendChild(orn);
   });
 
   return g;
